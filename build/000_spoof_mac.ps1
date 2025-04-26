@@ -5,28 +5,40 @@ if (-not $isAdmin) {
     exit 1
 }
 
-# Get a physical network adapter (exclude virtual adapters like ProtonVPN)
-$adapter = Get-NetAdapter | Where-Object { $_.Status -eq "Up" -and $_.Name -notlike "*VPN*" -and $_.PhysicalMediaType -like "*802.*" } | Select-Object -First 1
-if ($null -eq $adapter) {
-    Write-Host "No suitable physical network adapter found. Run 'Get-NetAdapter' to see available adapters."
+# Get all physical network adapters (exclude virtual adapters)
+$adapters = Get-NetAdapter | Where-Object { $_.Status -eq "Up" -and $_.Name -notlike "*VPN*" -and $_.PhysicalMediaType -like "*802.*" }
+if ($null -eq $adapters) {
+    Write-Host "No suitable physical network adapters found. Run 'Get-NetAdapter' to see available adapters."
     exit 1
 }
 
-# Randomize MAC address
-$newMac = (1..6 | ForEach-Object { "{0:X2}" -f (Get-Random -Minimum 0 -Maximum 255) }) -join ":"
-try {
-    Set-NetAdapter -Name $adapter.Name -MacAddress $newMac -ErrorAction Stop -Confirm:$false
-    Restart-NetAdapter -Name $adapter.Name -ErrorAction Stop
-    # Verify the MAC address change
-    $updatedAdapter = Get-NetAdapter -Name $adapter.Name
-    if ($updatedAdapter.MacAddress -replace "-", ":" -eq $newMac) {
-        Write-Host "MAC address successfully changed to $newMac for adapter $($adapter.Name)."
-    } else {
-        Write-Host "MAC address change failed. Current MAC is $($updatedAdapter.MacAddress)."
-        exit 1
+# Try each adapter until one works
+$success = $false
+foreach ($adapter in $adapters) {
+    Write-Host "Attempting to change MAC address for adapter $($adapter.Name)..."
+    # Randomize MAC address
+    $newMac = (1..6 | ForEach-Object { "{0:X2}" -f (Get-Random -Minimum 0 -Maximum 255) }) -join ":"
+    try {
+        Set-NetAdapter -Name $adapter.Name -MacAddress $newMac -ErrorAction Stop -Confirm:$false
+        Restart-NetAdapter -Name $adapter.Name -ErrorAction Stop
+        # Verify the MAC address change
+        $updatedAdapter = Get-NetAdapter -Name $adapter.Name
+        if ($updatedAdapter.MacAddress -replace "-", ":" -eq $newMac) {
+            Write-Host "MAC address successfully changed to $newMac for adapter $($adapter.Name)."
+            $success = $true
+            break
+        } else {
+            Write-Host "MAC address change failed for adapter $($adapter.Name). Current MAC is $($updatedAdapter.MacAddress)."
+        }
+    } catch {
+        Write-Host "Failed to change MAC address for adapter $($adapter.Name): $_"
+        Write-Host "This adapter may not support MAC address changes. Trying next adapter..."
     }
-} catch {
-    Write-Host "Failed to change MAC address: $_"
+}
+
+if (-not $success) {
+    Write-Host "Unable to change MAC address on any adapter. Some drivers (e.g., Intel Wi-Fi) may not support this operation."
+    Write-Host "Try updating your network driver or using a different adapter."
     exit 1
 }
 
