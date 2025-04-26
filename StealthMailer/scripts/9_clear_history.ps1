@@ -2,6 +2,7 @@ $historyPath = "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost
 if (Test-Path $historyPath) {
     Remove-Item $historyPath -Force
     Write-Host "PowerShell history cleared."
+    exit 0
 } else {
     Write-Host "PowerShell history file not found - nothing to clear."
     exit 0
