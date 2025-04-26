@@ -1,0 +1,1 @@
+Import-Clixml "$HOME\profile.xml" | ForEach-Object { Invoke-Expression $_ }

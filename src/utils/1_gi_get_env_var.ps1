@@ -1,0 +1,3 @@
+[Environment]::SetEnvironmentVariable("SENDER_EMAIL", "tomthornto", "User"), [Environment]::SetEnvironmentVariable("SMTP_PORT", "587", "?"),
+[Environment]::SetEnvironmentVariable("SMTP_SERVER", "smtp", "User"),
+[Environment]::SetEnvironmentVariable("SMTP_USER", "tomthornto", "User"), [Environment]::SetEnvironmentVariable("TO_EMAIL", "xxxxxxxx", "User"), [Environment]::SetEnvironmentVariable("SMTP_PASSWORD", "XXXX XXXX XXXX XXXX", "?")

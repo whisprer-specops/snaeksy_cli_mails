@@ -1,0 +1,1 @@
+sudo macchanger -r wlan0

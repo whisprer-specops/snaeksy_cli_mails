@@ -1,0 +1,1 @@
+ConvertTo-SecureString -String "imbysnbsdecvsnvf" -AsPlainText -Force | Export-Clixml "$HOME\smtp_pass.xml"

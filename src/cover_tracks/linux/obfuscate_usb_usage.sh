@@ -1,0 +1,1 @@
+torsocks wget https://releases.ubuntu.com/24.04/ubuntu-24.04-desktop-amd64.iso

@@ -1,0 +1,1 @@
+proxychains wget <tool_url>

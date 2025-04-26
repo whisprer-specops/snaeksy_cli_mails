@@ -1,0 +1,1 @@
+del %APPDATA%\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
