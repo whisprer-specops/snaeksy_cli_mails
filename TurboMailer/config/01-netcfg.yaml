@@ -1,0 +1,35 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: false  # Disable DHCP for IPv4
+      dhcp6: false  # Disable DHCP for IPv6
+      addresses:
+        - 138.197.11.134/20
+        - 138.197.11.135/20
+        - 138.197.11.136/20
+        - 138.197.11.137/20
+        - 138.197.11.138/20
+        - 10.17.0.5/16
+          match:
+             macaddress: ca:4f:24:cf:4d:40
+          mtu: 1500
+      routes:
+        - to: 0.0.0.0/0
+          via: 138.197.11.1
+        - to: ::/0
+          via: 2604:a800:14::1
+          set-name: eth0
+            - 10.108.0.2/20
+          match:
+             macaddress: fa:ee:05:66:33:69
+          mtu: 1500
+      nameservers:
+        addresses:
+          - 67.207.67.2
+          - 67.207.67.3
+          - 2001:4860:4860::8844  # Google DNS IPv6
+          - 2001:4860:4860::8888  # Google DNS IPv6
+        search: []
+          set-name: eth1

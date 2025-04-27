@@ -1,0 +1,75 @@
+# Create a test file to upload
+Set-Content -Path .\test_upload.txt -Value "This is a test file sent over Tor!"
+
+# Create a Python script to handle the upload
+Set-Content -Path .\temp_upload.py -Value @"
+import requests
+import time
+import json
+
+# Define the hidden service proxy URL with socks5h
+hidden_service_url = "pchy3lwxuiddfedistxvvlh4rkc5y2pm774qfjsect52qzzd4hcredyd.onion:3128"
+proxies = {
+    "http": f"socks5h://proxyuser:GoodWitch10@127.0.0.1:9050",
+    "https": f"socks5h://proxyuser:GoodWitch10@127.0.0.1:9050"
+}
+
+try:
+    session = requests.Session()
+    # Test connection to the hidden service proxy
+    response = session.get(f"http://{hidden_service_url}", proxies=proxies, timeout=30)
+    print("Successfully connected to hidden service proxy.")
+
+    # Upload the file to httpbin.org
+    with open('test_upload.txt', 'rb') as f:
+        files = {'file': f}
+        response = session.post("https://httpbin.org/post", files=files, proxies=proxies, timeout=30)
+    print("File uploaded over Tor via hidden service.")
+    # Parse and print just the uploaded file content
+    response_data = json.loads(response.text)
+    uploaded_content = response_data['files']['file']
+    print("Uploaded file content:", uploaded_content)
+except Exception as e:
+    print("Failed to upload file:", e)
+    exit(1)
+"@
+
+try {
+    $torPath = (Get-Command tor.exe -ErrorAction Stop).Source
+} catch {
+    Write-Host "Tor executable not found in PATH. Ensure tor.exe is in your system PATH."
+    exit 1
+}
+for ($attempt = 1; $attempt -le 3; $attempt++) {
+    # Forcefully kill any existing Tor processes and wait
+    taskkill /IM tor.exe /F 2>$null
+    Start-Sleep -Seconds 2
+    Start-Process $torPath -NoNewWindow; Start-Sleep -Seconds 10
+    try {
+        $pythonOutput = python temp_upload.py 2>&1 | Out-String
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host $pythonOutput
+            Remove-Item temp_upload.py
+            Remove-Item test_upload.txt
+            exit 0
+        } else {
+            Write-Host "Attempt $attempt failed: python exited with code $LASTEXITCODE"
+            Write-Host "Python output: $pythonOutput"
+            if ($attempt -lt 3) {
+                Write-Host "Retrying in 10 seconds..."
+                Start-Sleep -Seconds 10
+            }
+        }
+    } catch {
+        Write-Host "Attempt $attempt failed: $_"
+        if ($attempt -lt 3) {
+            Write-Host "Retrying in 10 seconds..."
+            Start-Sleep -Seconds 10
+        }
+    }
+}
+Remove-Item temp_upload.py -ErrorAction SilentlyContinue
+Remove-Item test_upload.txt -ErrorAction SilentlyContinue
+Write-Host "Failed to upload file after retries."
+taskkill /IM tor.exe /F 2>$null
+exit 1
