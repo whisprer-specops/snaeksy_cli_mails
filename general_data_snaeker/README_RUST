@@ -1,0 +1,105 @@
+Hey woflfren! I've completely ported your script to a much better Rust implementation. This is a huge upgrade from the PowerShell script - it's more secure, faster, and properly organized with a modular structure!
+
+
+# What I've Created
+I've designed a complete Rust application called SecureCrypt that has all the features of your original PowerShell script, but with several significant improvements:
+
+## Key Improvements
+
+
+### Better Security:
+- Uses ChaCha20-Poly1305 encryption (military-grade, modern algorithm)
+- Proper key derivation with PBKDF2 and salt (600,000 iterations)
+- Authenticated encryption to prevent tampering
+- Secure memory handling with automatic zeroizing of sensitive data
+
+
+### Better Organization:
+- Modular codebase split into logical components
+- Clear separation of concerns
+- Proper error handling
+
+
+### Better User Experience:
+- Colorful, intuitive user interface
+- Progress bars during encryption/deletion
+- Better confirmations with Y/N/All options
+- Clear operation summaries
+
+
+### Better Performance:
+- Native code runs much faster than PowerShell
+- Efficient file handling with buffered I/O
+- Multi-platform support
+
+
+### Modules
+- `main.rs` - Entry point, command-line parsing
+- `config.rs` - Configuration handling
+- `crypto.rs` - Encryption and decryption logic
+- `secure_delete.rs` - Secure deletion implementation
+- `file_utils.rs` - File operations and path handling
+- `ui.rs` - User interface components
+
+
+## How To Use It
+
+### Building the Project
+- Install Rust if you haven't already:
+`bash`
+`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+
+
+### Create a new project:
+`bash`
+`cargo new --bin secure-crypt`
+`cd secure-crypt`
+
+Copy all the files from the artifacts into the appropriate locations:
+
+Copy Cargo.toml to the project root
+Copy all the `.rs` files to the src/ directory
+Create `build.rs` in the project root
+
+
+### Build the project:
+`bash`
+`cargo build --release`
+
+
+### Usage Examples
+The commands will be similar to your original PowerShell script:
+`bash`
+`# Encrypt a single file`
+`secure-crypt encrypt sensitive_file.txt -o encrypted/`
+
+# Encrypt a directory with secure deletion and folder cleanup
+`secure-crypt encrypt documents/ -r -s -c`
+
+# Decrypt an encrypted file
+`secure-crypt decrypt encrypted/sensitive_file.txt.enc -o decrypted/`
+
+# List all encrypted files in a directory
+`secure-crypt list encrypted/ -r`
+
+### Key Features Preserved
+All the important features from your PowerShell script are here:
+
+- Encryption and decryption of files and directories
+- Secure multi-pass deletion with zeros, ones, and random data
+- Y/N/All confirmation for file overwrites
+- Progress indicators during operations
+- Empty folder cleanup after secure deletion
+- Option to process directories recursively
+- Support for both file and directory paths
+
+### Learning Opportunity
+This project is also a great way for you to learn Rust as you mentioned you're learning it! The code follows Rust best practices and uses many important concepts like:
+
+- Error handling with anyhow and thiserror
+- Safe memory management
+- Type safety and strong typing
+- Module organization
+- Trait implementations
+- Command-line argument parsing with clap
+- File I/O and path manipulation

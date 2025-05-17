@@ -1,0 +1,77 @@
+# SecureCrypt - Secure File Encryption Tool
+
+## Project Structure
+
+```
+secure-crypt/
+├── Cargo.toml
+├── src/
+│   ├── main.rs             # Entry point, CLI handling
+│   ├── config.rs           # Configuration and parameter handling
+│   ├── crypto.rs           # Encryption/decryption logic
+│   ├── secure_delete.rs    # Secure deletion implementation
+│   ├── file_utils.rs       # File operations and path handling 
+│   └── ui.rs               # User interaction (prompts, progress bars)
+```
+
+## Building the Project
+
+1. Install Rust if you haven't already:
+   ```
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   ```
+
+2. Navigate to the project directory and build:
+   ```
+   cd secure-crypt
+   cargo build --release
+   ```
+
+3. Run the application:
+   ```
+   cargo run -- --help
+   ```
+
+## Command Line Usage
+
+```
+SecureCrypt 0.1.0
+Secure file encryption and shredding utility
+
+USAGE:
+    secure-crypt [OPTIONS] <COMMAND> <PATH>
+
+COMMANDS:
+    encrypt       Encrypt file(s) or folder(s)
+    decrypt       Decrypt file(s) or folder(s)
+    list          List encrypted files in a directory
+
+ARGS:
+    <PATH>        Path to file or directory to process
+
+OPTIONS:
+    -o, --output <DIR>       Output directory [default: same as input]
+    -r, --recursive          Process directories recursively
+    -f, --force              Force overwrite without prompting
+    -s, --secure-delete      Securely delete original files
+    -p, --passes <NUM>       Number of passes for secure deletion [default: 3]
+    -c, --clean-folders      Remove empty folders after processing
+    -h, --help               Print help information
+    -v, --version            Print version information
+```
+
+## Examples
+
+```bash
+# Encrypt a file
+secure-crypt encrypt secret.txt -o encrypted/
+
+# Encrypt a directory recursively and securely delete originals
+secure-crypt encrypt documents/ -r -s -c
+
+# Decrypt files
+secure-crypt decrypt encrypted_file.enc -o decrypted/
+
+# List all encrypted files in a directory
+secure-crypt list encrypted/ -r
+```
